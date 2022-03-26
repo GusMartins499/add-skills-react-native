@@ -12,9 +12,14 @@ import {
 import { Button } from '../components/Button';
 import { SkillCard } from '../components/SkillCard';
 
+interface ISkillData {
+  id: string;
+  name: string;
+}
+
 export function Home() {
   const [newSkill, setNewSkill] = useState('');
-  const [mySkills, setMySkills] = useState([]);
+  const [mySkills, setMySkills] = useState<ISkillData[]>([]);
   const [gretting, setGretting] = useState('');
 
   useEffect(() => {
@@ -30,17 +35,21 @@ export function Home() {
   }, [mySkills]);
 
   function handleAddNewSkill() {
+    const data = {
+      id: String(new Date().getTime()),
+      name: newSkill,
+    }
     if (newSkill.trim() === '') {
       Alert.alert('Invalid skill');
       return;
     }
-    const checkDuplicateSkill = mySkills.find(skill => skill === newSkill);
+    const checkDuplicateSkill = mySkills.find(skill => skill.name === newSkill);
 
     if (checkDuplicateSkill) {
       Alert.alert('skill already added');
       return;
     }
-    setMySkills([...mySkills, newSkill]);
+    setMySkills([...mySkills, data]);
   }
 
   return (
@@ -57,8 +66,8 @@ export function Home() {
       <Text style={[styles.title, { marginTop: 50 }]}>My Skills</Text>
       <FlatList
         data={mySkills}
-        keyExtractor={item => item}
-        renderItem={({ item }) => <SkillCard skill={item} />}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => <SkillCard skill={item.name} />}
       />
     </SafeAreaView>
   );
